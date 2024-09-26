@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional // 로직 처리하다가 오류있으면 롤백시켜줌.
 @RequiredArgsConstructor
 public class MemberService implements UserDetailsService {
 

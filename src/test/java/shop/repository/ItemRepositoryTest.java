@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @SpringBootTest
-@TestPropertySource(locations="classpath:application-test.properties")
+@TestPropertySource(locations="classpath:application-test.yml")
 class ItemRepositoryTest {
 
     @Autowired

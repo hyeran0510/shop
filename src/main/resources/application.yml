@@ -7,6 +7,12 @@ spring:
     url: jdbc:mariadb://localhost:3306/shop?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul&useOldAliasMetadataBehavior=true&zeroDateTimeBehavior=convertToNull
     username: ran
     password: 9151
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 30000
+      connection-timeout: 20000
+      max-lifetime: 1800000
   thymeleaf:
     enabled: true
     cache: false
@@ -39,7 +45,7 @@ logging:
             sql: trace
 
 upload:
-  dir: /Users/hyeranpakr/Desktop/잡동사니/9.14/shop/dir
+  dir: /Users/hyeranpakr/Desktop/happy/9.14/shop/dir
 
-itemImgLocation: /Users/hyeranpakr/Desktop/잡동사니/9.14/shop/files/
-uploadPath: /Users/hyeranpakr/Desktop/잡동사니/9.14/shop/upload
+itemImgLocation: /Users/hyeranpakr/Desktop/happy/9.14/shop/files/
+uploadPath: /Users/hyeranpakr/Desktop/happy/9.14/shop/upload

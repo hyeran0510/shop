@@ -1,5 +1,6 @@
 package shop.controller;
 
+import com.shop.ShopApplication;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +14,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(classes = ShopApplication.class) // Specify your main application class here
 @AutoConfigureMockMvc
-@TestPropertySource(locations="classpath:application-test.properties")
+@TestPropertySource(locations = "classpath:application-test.yml") // Ensure the correct path and extension
 class ItemControllerTest {
 
     @Autowired
@@ -24,7 +25,7 @@ class ItemControllerTest {
     @Test
     @DisplayName("상품 등록 페이지 권한 테스트")
     @WithMockUser(username = "admin", roles = "ADMIN")
-    public void itemFormTest() throws Exception{
+    public void itemFormTest() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/admin/item/new"))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -33,7 +34,7 @@ class ItemControllerTest {
     @Test
     @DisplayName("상품 등록 페이지 일반 회원 접근 테스트")
     @WithMockUser(username = "user", roles = "USER")
-    public void itemFormNotAdminTest() throws Exception{
+    public void itemFormNotAdminTest() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/admin/item/new"))
                 .andDo(print())
                 .andExpect(status().isForbidden());
