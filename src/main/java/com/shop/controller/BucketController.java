@@ -18,14 +18,15 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
+@RequestMapping("/bucket")
 public class BucketController {
-
 
     private final BucketListService bucketListService;
 
     @GetMapping("/list")
     public String getBucketList(Model model) {
         List<Bucket> bucketList = bucketListService.getList();
+        model.addAttribute("bucketList", bucketList); // 버킷리스트 모델에 추가
         return "bucket_list";
     }
 
@@ -54,6 +55,7 @@ public class BucketController {
             bucketForm.setTitle(bucket.getTitle());
             bucketForm.setItems(bucket.getItems());
             bucketForm.setRating(bucket.getRating());
+            model.addAttribute("bucketForm", bucketForm); // 모델에 추가
             return "bucket_form";
         }
         return "redirect:/bucket/list";
@@ -67,7 +69,7 @@ public class BucketController {
             return "bucket_form";
         }
 
-        if (file != null && file.isEmpty()) {
+        if (file != null && !file.isEmpty()) {
             redirectAttributes.addFlashAttribute("message", "Please select a file to upload.");
             return "redirect:/bucket/modify/" + bucketForm.getId();
         }
@@ -95,4 +97,3 @@ public class BucketController {
         return "redirect:/bucket/list";
     }
 }
-

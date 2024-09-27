@@ -25,41 +25,22 @@ public class BucketListService {
     private final BucketListRepository bucketListRepository;
     private final String uploadDir = "/Users/hyeranpakr/Desktop/happy/9.14/shop/";
 
-    // 최신 항목이 위로 올라오게 하는 getList 메서드
     @Transactional(readOnly = true)
     public List<Bucket> getList() {
         return bucketListRepository.findAllByOrderByCreateDateDesc();
     }
 
-    // 개별 Bucket 가져오기
     public Bucket getBucket(Long id) {
-        Optional<Bucket> bucket = this.bucketListRepository.findById(id);
-        return bucket.orElseThrow(() -> new DataNotFoundException("Bucket not found with id: " + id));
+        return bucketListRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Bucket not found with id: " + id));
     }
 
-    // 파일 및 데이터 저장
+    @Transactional
     public void create(String title, String items, MultipartFile file, int rating) throws IOException {
-        long maxFileSize = 5 * 1024 * 1024; // 5MB
+        validateFile(file);
 
-        // 파일 크기 체크
-        if (file.getSize() > maxFileSize) {
-            throw new IllegalStateException("파일 크기가 너무 큽니다. 최대 5MB까지 업로드할 수 있습니다.");
-        }
+        String fileName = saveFile(file);
 
-        // 파일 저장할 경로 설정
-        String projectPath = uploadDir;
-
-        // 디렉토리가 존재하지 않으면 생성
-        Files.createDirectories(Paths.get(projectPath));
-
-        // 파일 이름 중복 방지를 위한 UUID 생성
-        String fileName = UUID.randomUUID().toString() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
-        Path filePath = Paths.get(projectPath + fileName);
-
-        // 파일 저장
-        Files.copy(file.getInputStream(), filePath);
-
-        // Bucket 객체 생성 및 저장
         Bucket bucket = new Bucket();
         bucket.setTitle(title);
         bucket.setItems(items);
@@ -68,56 +49,69 @@ public class BucketListService {
         bucket.setRating(rating);
         bucket.setCreateDate(LocalDateTime.now());
 
-        this.bucketListRepository.save(bucket);
+        bucketListRepository.save(bucket);
     }
 
-    // Bucket 수정
+    @Transactional
     public void modify(Bucket bucket, MultipartFile file) throws IOException {
-        String projectPath = uploadDir;
-
-        // 파일이 있으면 새로운 파일 저장
         if (file != null && !file.isEmpty()) {
             // 기존 파일 삭제
             if (bucket.getFileName() != null) {
-                Files.deleteIfExists(Paths.get(projectPath + bucket.getFileName()));
+                deleteFile(bucket.getFileName());
             }
 
             // 새 파일 저장
-            String fileName = UUID.randomUUID().toString() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
-            Path filePath = Paths.get(projectPath + fileName);
-            Files.copy(file.getInputStream(), filePath);
-
-            // 파일 이름 및 경로 업데이트
+            String fileName = saveFile(file);
             bucket.setFileName(fileName);
             bucket.setFilePath("/files/" + fileName);
         }
 
-        // 다른 필드 업데이트
         bucket.setCreateDate(LocalDateTime.now());
-
-        // 데이터베이스에 업데이트
-        this.bucketListRepository.save(bucket);
+        bucketListRepository.save(bucket);
     }
 
-    // Bucket 삭제
+    @Transactional
     public void deleteBucket(Long id) {
-        Optional<Bucket> optionalBucket = bucketListRepository.findById(id);
-        if (optionalBucket.isPresent()) {
-            Bucket bucket = optionalBucket.get();
-            try {
-                // 파일 삭제
-                if (bucket.getFileName() != null) {
-                    String projectPath = uploadDir;
-                    Files.deleteIfExists(Paths.get(projectPath + bucket.getFileName()));
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        Bucket bucket = bucketListRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Bucket not found with id: " + id));
 
-            // 데이터베이스에서 Bucket 삭제
-            bucketListRepository.deleteById(id);
-        } else {
-            throw new DataNotFoundException("Bucket not found with id: " + id);
+        // 파일 삭제
+        if (bucket.getFileName() != null) {
+            deleteFile(bucket.getFileName());
+        }
+
+        // 데이터베이스에서 Bucket 삭제
+        bucketListRepository.deleteById(id);
+    }
+
+    // 파일 검증 로직
+    private void validateFile(MultipartFile file) {
+        if (file.getSize() > 5 * 1024 * 1024) {
+            throw new IllegalStateException("파일 크기가 너무 큽니다. 최대 5MB까지 업로드할 수 있습니다.");
+        }
+    }
+
+    // 파일 저장 로직
+    private String saveFile(MultipartFile file) throws IOException {
+        String projectPath = uploadDir;
+        Files.createDirectories(Paths.get(projectPath)); // 경로가 없으면 생성
+
+        String fileName = UUID.randomUUID().toString() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
+        Path filePath = Paths.get(projectPath + fileName);
+
+        // 파일 저장
+        Files.copy(file.getInputStream(), filePath);
+        return fileName;
+    }
+
+    // 파일 삭제 로직
+    private void deleteFile(String fileName) {
+        try {
+            Path filePath = Paths.get(uploadDir + fileName);
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            e.printStackTrace(); // 로그 처리 또는 예외 처리 필요
+            throw new IllegalStateException("파일 삭제 중 오류가 발생했습니다.");
         }
     }
 }
