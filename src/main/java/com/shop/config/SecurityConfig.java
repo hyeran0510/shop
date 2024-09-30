@@ -26,6 +26,7 @@ public class SecurityConfig {
                         .requestMatchers("/css/**", "/js/**", "/img/**").permitAll()
                         .requestMatchers("/", "/members/**", "/item/**", "/images/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/members/login").permitAll() // 로그인 페이지 접근 허용
                         .anyRequest()
                         .authenticated()
                 ).formLogin(formLoginCustomizer -> formLoginCustomizer
@@ -34,18 +35,15 @@ public class SecurityConfig {
                         .usernameParameter("email")
                         .failureUrl("/members/login/error")
                         .failureHandler(new CustomAuthenticationFailureHandler())
-                ).logout( logoutCustomizer -> logoutCustomizer
+                ).logout(logoutCustomizer -> logoutCustomizer
                         .logoutRequestMatcher(new AntPathRequestMatcher("/members/logout"))
                         .logoutSuccessUrl("/")
-
                 )
-                .build()
-                ;
+                .build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }
