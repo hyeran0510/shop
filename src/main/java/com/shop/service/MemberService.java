@@ -31,6 +31,17 @@ public class MemberService implements UserDetailsService {
         }
     }
 
+    //getMember: 회원이 없으면 UsernameNotFoundException 발생 → 주로 로그인/인증 과정에서 사용.
+    //validateDuplicateMember: 회원이 있으면 IllegalStateException 발생 → 회원 가입 시 중복 체크.
+
+    public Member getMember(String email) {
+        Member member = memberRepository.findByEmail(email);
+        if (member == null) {
+            throw new UsernameNotFoundException("회원 정보를 찾을 수 없습니다.");
+        }
+        return member;
+    }
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 

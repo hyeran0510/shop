@@ -28,7 +28,199 @@
                 border-radius: 5px;
                 padding: 10px;
             }
+            .formline img {<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+
+    <head>
+        <style>
+            .mybtns {
+                display: flex;
+                justify-content: center;
+                margin: 10px 0;
+            }
+            .mybtns > button {
+                margin: 0 10px;
+            }
+            #myDIV {
+                display: none;
+                border: 1px solid #ced4da;
+                border-radius: 5px;
+                padding: 20px;
+                margin-top: 20px;
+            }
+            .formline {
+                display: flex;
+                align-items: center;
+                margin: 10px 0;
+                border: 1px solid #ced4da;
+                border-radius: 5px;
+                padding: 10px;
+            }
             .formline img {
+                width: 100px;
+                height: 100px;
+                object-fit: cover;
+                margin-right: 20px;
+            }
+            .formline .card-body {
+                flex: 1;
+            }
+        </style>
+    </head>
+    <body>
+    <div class="container">
+        <h5 class="my-3 border-bottom pb-2">버킷리스트 등록</h5>
+        <div class="mybtns">
+            <button id="toggleFormBtn" class="btn btn-dark">추가/닫기</button>
+        </div>
+        <div id="myDIV">
+            <div class="formline">
+                <div class="card-body">
+                    <form action="/bucket/create" method="post" enctype="multipart/form-data">
+                        <input type="hidden" th:attr="name=${_csrf.parameterName}, value=${_csrf.token}" />
+                        <div class="mb-3">
+                            <label for="title" class="form-label">아이템</label>
+                            <input type="text" id="title" name="title" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="items" class="form-label">내용</label>
+                            <input type="text" id="items" name="items" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="file" class="form-label">이미지</label>
+                            <input type="file" id="file" name="file" class="form-control" accept="image/*">
+                        </div>
+                        <div class="mb-3">
+                            <label for="rating" class="form-label">필요 별점</label>
+                            <select class="form-select" id="rating" name="rating" required>
+                                <option value="" selected disabled>-- 선택하기 --</option>
+                                <option value="1">⭐</option>
+                                <option value="2">⭐⭐</option>
+                                <option value="3">⭐⭐⭐</option>
+                                <option value="4">⭐⭐⭐⭐</option>
+                                <option value="5">⭐⭐⭐⭐⭐</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">등록하기</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 버킷리스트가 비어 있을 때 메시지 출력 -->
+        <div th:if="${#lists.isEmpty(bucketList)}">
+            <p>등록된 버킷리스트가 없습니다.</p>
+        </div>
+
+        <!-- 버킷리스트 데이터가 있을 때만 리스트 출력 -->
+        <div th:unless="${#lists.isEmpty(bucketList)}">
+            <div th:each="bucket : ${bucketList}" class="formline">
+                <div class="card mb-3">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img th:src="${bucket.filePath != null ? bucket.filePath : '/images/default.png'}" class="card-img-top" alt="이미지">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${bucket.title}">Default Title</h5>
+                                <p class="card-text" th:text="${bucket.items}">Default Description</p>
+                                <p class="card-text" th:text="${#temporals.format(bucket.createDate, 'yyyy-MM-dd HH:mm')}">Creation Date</p>
+                                <div class="btn-group">
+                                    <a th:href="@{|/bucket/modify/${bucket.id}|}" class="btn btn-primary">수정</a>
+                                    <a href="javascript:void(0);" th:data-uri="@{|/bucket/delete/${bucket.id}|}" class="btn btn-primary delete">삭제</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:each="bucket : ${bucketList}" class="formline">
+        <div class="card mb-3">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img th:src="${bucket.filePath != null ? bucket.filePath : '/images/default.png'}" class="card-img-top" alt="이미지">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${bucket.title}">Default Title</h5>
+                        <p class="card-text" th:text="${bucket.items}">Default Description</p>
+                        <p class="card-text">별점:
+                            <span th:each="i : ${#lists.range(1, bucket.rating)}">⭐</span>
+                        </p>
+                        <p class="card-text">별점: <span class="rating">${bucket.rating}</span></p>
+                        <!--혹시 몰라서 두개 넣음 확인 꼭 하기  -->
+
+                        <p class="card-text" th:text="${#temporals.format(bucket.createDate, 'yyyy-MM-dd HH:mm')}">Creation Date</p>
+                        <div class="btn-group">
+                            <a th:href="@{|/bucket/modify/${bucket.id}|}" class="btn btn-primary">수정</a>
+                            <a href="javascript:void(0);" th:data-uri="@{|/bucket/delete/${bucket.id}|}" class="btn btn-primary delete">삭제</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div th:if="${not #lists.isEmpty(bucketList)}">
+            <div th:each="bucket : ${bucketList}" class="formline">
+                <div class="card mb-3">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img th:src="${bucket.filePath != null ? bucket.filePath : '/images/default.png'}" class="card-img-top" alt="이미지">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${bucket.title}">Default Title</h5>
+                                <p class="card-text" th:text="${bucket.items}">Default Description</p>
+                                <p class="card-text" th:text="${#temporals.format(bucket.createDate, 'yyyy-MM-dd HH:mm')}">Creation Date</p>
+                                <div class="btn-group">
+                                    <a th:href="@{|/bucket/modify/${bucket.id}|}" class="btn btn-primary">수정</a>
+                                    <a href="javascript:void(0);" th:data-uri="@{|/bucket/delete/${bucket.id}|}" class="btn btn-primary delete">삭제</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var formDisplayed = false;
+            var toggleFormBtn = document.getElementById("toggleFormBtn");
+
+            if (toggleFormBtn) {
+                toggleFormBtn.addEventListener("click", function() {
+                    var myDIV = document.getElementById("myDIV");
+                    if (formDisplayed) {
+                        myDIV.style.display = "none";
+                    } else {
+                        myDIV.style.display = "block";
+                    }
+                    formDisplayed = !formDisplayed;
+                });
+            }
+
+            const delete_elements = document.getElementsByClassName("delete");
+            Array.from(delete_elements).forEach(function(element) {
+                element.addEventListener('click', function() {
+                    if (confirm("정말로 삭제하시겠습니까?")) {
+                        location.href = this.dataset.uri;
+                    }
+                });
+            });
+        });
+    </script>
+
+    </body>
+</html>
                 width: 100px;
                 height: 100px;
                 object-fit: cover;
@@ -92,6 +284,10 @@
                                 <h5 class="card-title" th:text="${bucket.title}">Default Title</h5>
                                 <p class="card-text" th:text="${bucket.items}">Default Description</p>
                                 <p class="card-text" th:text="${#temporals.format(bucket.createDate, 'yyyy-MM-dd HH:mm')}">Creation Date</p>
+                                <p class="card-text">중요도:
+                                    <span th:each="i : ${#numbers.sequence(1, bucket.rating)}">⭐</span>
+                                </p>
+
                                 <div class="btn-group">
                                     <a th:href="@{|/bucket/modify/${bucket.id}|}" class="btn btn-primary">수정</a>
                                     <a href="javascript:void(0);" th:data-uri="@{|/bucket/delete/${bucket.id}|}" class="btn btn-primary delete">삭제</a>

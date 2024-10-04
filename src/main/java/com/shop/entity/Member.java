@@ -38,7 +38,7 @@ public class Member extends BaseEntity {
         member.setAddress(memberFormDto.getAddress());
         String password = passwordEncoder.encode(memberFormDto.getPassword());
         member.setPassword(password);
-        member.setRole(Role.ADMIN);  //USER 롤이면 바꿔주면됨 유저로
+        member.setRole(Role.USER);  //USER  ADMIN   롤이면 바꿔주면됨 유저로
         return member;
     }
 

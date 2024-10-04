@@ -23,8 +23,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(authorizeHttpRequestsCustomizer -> authorizeHttpRequestsCustomizer
-                        .requestMatchers("/css/**", "/js/**", "/img/**").permitAll()
-                        .requestMatchers("/", "/members/**", "/item/**", "/images/**").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/img/**", "/images/**").permitAll()
+                        .requestMatchers("/", "/members/**", "/item/**", "/images/**", "/bucket/**").permitAll()
+                        .requestMatchers("/question/list").permitAll() // 자유게시판 목록 접근 허용
+// 버킷리스트 경로 추가
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/members/login").permitAll() // 로그인 페이지 접근 허용
                         .anyRequest()
