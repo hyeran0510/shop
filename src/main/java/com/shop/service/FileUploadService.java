@@ -10,7 +10,8 @@ import java.io.IOException;
 @Service
 public class FileUploadService {
 
-    private final String uploadDir = "/Users/hyeranpakr/Downloads/demo/src/main/resources/static/files/";
+    private final String uploadDir = "/Users/hyeranpakr/Desktop/happy/shop/src/main/resources/static/images/item";
+
 
     public void uploadFile(MultipartFile file) throws IOException {
         if (file.isEmpty()) {
@@ -24,7 +25,7 @@ public class FileUploadService {
         }
 
         String fileName = file.getOriginalFilename();
-        File destFile = new File(uploadDir + fileName);
+        File destFile = new File(uploadDir + "/" + fileName);
 
         try {
             FileCopyUtils.copy(file.getBytes(), destFile);

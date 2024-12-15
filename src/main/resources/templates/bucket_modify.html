@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>수정 페이지</title>
+</head>
+<body>
+<h1>버킷리스트 수정</h1>
+<form action="/bucket/update" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="id" th:value="${bucket.id}"/>
+    <div>
+        <label for="title">아이템:</label>
+        <input type="text" id="title" name="title" th:value="${bucket.title}" required>
+    </div>
+    <div>
+        <label for="items">내용:</label>
+        <input type="text" id="items" name="items" th:value="${bucket.items}" required>
+    </div>
+    <div>
+        <label for="file">이미지:</label>
+        <input type="file" id="file" name="file" accept="image/*">
+    </div>
+    <div>
+        <label for="rating">필요 별점:</label>
+        <select id="rating" name="rating" required>
+            <option value="" disabled>-- 선택하기 --</option>
+            <option th:value="1" th:text="'⭐'.repeat(1)"></option>
+            <option th:value="2" th:text="'⭐⭐'.repeat(2)"></option>
+            <option th:value="3" th:text="'⭐⭐⭐'.repeat(3)"></option>
+            <option th:value="4" th:text="'⭐⭐⭐⭐'.repeat(4)"></option>
+            <option th:value="5" th:text="'⭐⭐⭐⭐⭐'.repeat(5)"></option>
+        </select>
+    </div>
+    <button type="submit">수정하기</button>
+</form>
+</body>
+</html>

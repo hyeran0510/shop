@@ -95,15 +95,19 @@ public class ItemController {
 
         // 상품 수정 후 목록 페이지로 리다이렉트
         return "redirect:/admin/items";
-    }
+        }
+
 
 
     @GetMapping(value = {"/admin/items", "/admin/items/{page}"})
-    public String itemManage(ItemSearchDto itemSearchDto, @PathVariable("page") Optional<Integer> page, Model model){
+    public String itemManage(ItemSearchDto itemSearchDto, @PathVariable("page") Optional<Integer> page, Model model) {
 
-        // 한 페이지에 10개씩 표시하도록 설정
-        Pageable pageable = PageRequest.of(page.orElse(0), 10);
+        Pageable pageable = PageRequest.of(page.orElse(0), 3);
         Page<Item> items = itemService.getAdminItemPage(itemSearchDto, pageable);
+
+        if (items.isEmpty()) {
+            model.addAttribute("message", "등록된 상품이 없습니다.");
+        }
 
         model.addAttribute("items", items);
         model.addAttribute("itemSearchDto", itemSearchDto);
@@ -113,11 +117,13 @@ public class ItemController {
     }
 
 
+
     @GetMapping(value = "/item/{itemId}")
     public String itemDtl(Model model, @PathVariable("itemId") Long itemId){
         ItemFormDto itemFormDto = itemService.getItemDtl(itemId);
         model.addAttribute("item", itemFormDto);
         return "item/itemDtl";
     }
+
 
 }

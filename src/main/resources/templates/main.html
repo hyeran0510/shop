@@ -37,15 +37,21 @@
     <div id="carouselControls" class="carousel slide margin" data-ride="carousel">
         <div class="carousel-inner">
             <div class="carousel-item active item">
-                <img class="d-block w-100 banner" th:src="https://i.imgur.com/zwK7XG6.jpg" alt="First slide">
+                <img class="d-block w-100 banner" th:src="@{https://github.com/user-attachments/assets/e55de8ed-75f0-4d5f-bc7c-979f0cc5745a}" alt="First slide" width="200" height="750">
             </div>
         </div>
     </div>
 
 
+
+
     <input type="hidden" name="searchQuery" th:value="${itemSearchDto.searchQuery}">
     <div th:if="${not #strings.isEmpty(itemSearchDto.searchQuery)}" class="center">
         <p class="h3 font-weight-bold" th:text="${itemSearchDto.searchQuery} + ' 검색 결과'"></p>
+    </div>
+
+    <div th:if="${message}" class="alert alert-warning" role="alert">
+        [[${아직 등록된 상품이 없습니다.}]]
     </div>
 
     <div class="row">
@@ -64,6 +70,7 @@
             </div>
         </th:block>
     </div>
+
 
     <div th:with="start=${(items.number/maxPage)*maxPage + 1}, end=(${(items.totalPages == 0) ? 1 : (start + (maxPage - 1) < items.totalPages ? start + (maxPage - 1) : items.totalPages)})" >
         <ul class="pagination justify-content-center">

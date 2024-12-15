@@ -45,9 +45,9 @@ public class QuestionService {
                 Join<Answer, Member> u2 = a.join("member", JoinType.LEFT);
                 return cb.or(cb.like(q.get("subject"), "%" + kw + "%"), // 제목
                         cb.like(q.get("content"), "%" + kw + "%"), // 내용
-                        cb.like(u1.get("username"), "%" + kw + "%"), // 질문 작성자
+                        cb.like(u1.get("member"), "%" + kw + "%"), // 질문 작성자
                         cb.like(a.get("content"), "%" + kw + "%"), // 답변 내용
-                        cb.like(u2.get("username"), "%" + kw + "%")); // 답변 작성자
+                        cb.like(u2.get("member"), "%" + kw + "%")); // 답변 작성자
             }
         };
     }

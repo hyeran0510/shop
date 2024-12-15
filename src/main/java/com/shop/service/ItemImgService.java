@@ -22,17 +22,20 @@ public class ItemImgService {
 
     private final FileService fileService;
 
-    public void saveItemImg(ItemImg itemImg, MultipartFile itemImgFile) throws Exception{
+    public void saveItemImg(ItemImg itemImg, MultipartFile itemImgFile) throws Exception {
         String oriImgName = itemImgFile.getOriginalFilename();
         String imgName = "";
         String imgUrl = "";
 
         //파일 업로드
-        if(!StringUtils.isEmpty(oriImgName)){
-            imgName = fileService.uploadFile(itemImgLocation, oriImgName,
-                    itemImgFile.getBytes());
+        if (!StringUtils.isEmpty(oriImgName)) {
+            String uploadDir = "/Users/hyeranpakr/Desktop/happy/shop/src/main/resources/static/images/item";
+
+
+            imgName = fileService.uploadFile(uploadDir, oriImgName, itemImgFile.getBytes());
             imgUrl = "/images/item/" + imgName;
         }
+
 
         //상품 이미지 정보 저장
         itemImg.updateItemImg(oriImgName, imgName, imgUrl);
@@ -56,5 +59,4 @@ public class ItemImgService {
             savedItemImg.updateItemImg(oriImgName, imgName, imgUrl);
         }
     }
-
 }

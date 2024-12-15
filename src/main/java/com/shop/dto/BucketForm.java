@@ -19,4 +19,7 @@ public class BucketForm {
 
     @NotNull(message = "별점은 필수사항입니다.")
     private Integer rating;
+
+    private String fileName; // 업로드된 파일의 이름
+    private String filePath; // 파일의 저장 경로 (URL 형식으로)
 }

@@ -23,7 +23,7 @@ import java.util.UUID;
 public class BucketListService {
 
     private final BucketListRepository bucketListRepository;
-    private final String uploadDir = "/Users/hyeranpakr/Desktop/happy/9.14/shop/";
+    private final String uploadDir = "/Users/hyeranpakr/Desktop/happy/shop/src/main/resources/static/images/item";
 
     @Transactional(readOnly = true)
     public List<Bucket> getList() {
@@ -97,21 +97,21 @@ public class BucketListService {
         Files.createDirectories(Paths.get(projectPath)); // 경로가 없으면 생성
 
         String fileName = UUID.randomUUID().toString() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
-        Path filePath = Paths.get(projectPath + fileName);
+        Path filePath = Paths.get(projectPath + fileName); // 슬래시 추가
 
         // 파일 저장
         Files.copy(file.getInputStream(), filePath);
         return fileName;
     }
 
-    // 파일 삭제 로직
     private void deleteFile(String fileName) {
         try {
-            Path filePath = Paths.get(uploadDir + fileName);
+            Path filePath = Paths.get(uploadDir + fileName); // 슬래시 확인
             Files.deleteIfExists(filePath);
         } catch (IOException e) {
             e.printStackTrace(); // 로그 처리 또는 예외 처리 필요
             throw new IllegalStateException("파일 삭제 중 오류가 발생했습니다.");
         }
     }
+
 }

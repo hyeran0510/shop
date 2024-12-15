@@ -26,7 +26,7 @@ public class MemberTest {
 
     @Test
     @DisplayName("Auditing 테스트")
-    @WithMockUser(username = "gildong", roles = "USER")
+    @WithMockUser(member = "gildong", roles = "USER")
     public void auditingTest(){
         Member newMember = new Member();
         memberRepository.save(newMember);

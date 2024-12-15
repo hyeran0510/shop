@@ -3,6 +3,7 @@ package com.shop.controller;
 import java.security.Principal;
 
 import com.shop.dto.AnswerDto;
+import com.shop.dto.QuestionDto;
 import com.shop.entity.Answer;
 import com.shop.entity.Member;
 import com.shop.entity.Question;
@@ -38,31 +39,43 @@ public class AnswerController {
                                BindingResult bindingResult, Principal principal) {
         Question question = this.questionService.getQuestion(id);
         Member member = this.memberService.getMember(principal.getName());
+
         if (bindingResult.hasErrors()) {
-            model.addAttribute("question", question);
+            QuestionDto questionDto = new QuestionDto(); // 필요에 따라 question 정보를 이용해 questionDto 생성
+            // questionDto에 필요한 데이터 설정
+            questionDto.setSubject(question.getSubject());
+            questionDto.setContent(question.getContent());
+            model.addAttribute("question", questionDto); // questionDto를 모델에 추가
+            model.addAttribute("answerForm", answerDto);
             return "question_detail";
         }
+
         Answer answer = this.answerService.create(question, answerDto.getContent(), member);
         return String.format("redirect:/question/detail/%s#answer_%s", answer.getQuestion().getId(), answer.getId());
     }
 
+
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/modify/{id}")
-    public String answerModify(AnswerDto answerDto, @PathVariable("id") Integer id, Principal principal) {
-        Answer answer = this.answerService.getAnswer(id);  // 답변 객체 가져오기
+    public String answerModify(@PathVariable("id") Integer id, Model model, Principal principal) {
+        Answer answer = this.answerService.getAnswer(id);
         if (!answer.getMember().getEmail().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
         }
+        AnswerDto answerDto = new AnswerDto();
         answerDto.setContent(answer.getContent());
+        model.addAttribute("answerForm", answerDto); // answerForm을 Model에 추가
         return "answer_form";
     }
+
 
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/modify/{id}")
     public String answerModify(@Valid AnswerDto answerDto, BindingResult bindingResult,
-                               @PathVariable("id") Integer id, Principal principal) {
+                               @PathVariable("id") Integer id, Model model, Principal principal) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("answerForm", answerDto); // answerForm을 다시 추가
             return "answer_form";
         }
         Answer answer = this.answerService.getAnswer(id);
@@ -73,11 +86,12 @@ public class AnswerController {
         return String.format("redirect:/question/detail/%s#answer_%s", answer.getQuestion().getId(), answer.getId());
     }
 
+
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/delete/{id}")
     public String answerDelete(Principal principal, @PathVariable("id") Integer id) {
         Answer answer = this.answerService.getAnswer(id);
-        if (!answer.getMember().getEmail().equals(principal.getName())) {
+        if (!answer.getMember().getName().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제권한이 없습니다.");
         }
         this.answerService.delete(answer);

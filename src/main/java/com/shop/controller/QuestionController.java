@@ -21,8 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
-
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +35,8 @@ public class QuestionController {
     private final MemberService memberService;
 
     @GetMapping("/list")
-    public String list(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
+    public String list(Model model,
+                       @RequestParam(value = "page", defaultValue = "0") int page,
                        @RequestParam(value = "kw", defaultValue = "") String kw) {
         log.info("page:{}, kw:{}", page, kw);
         Page<Question> paging = this.questionService.getList(page, kw);
@@ -45,7 +44,6 @@ public class QuestionController {
         model.addAttribute("kw", kw);
         return "question_list";
     }
-
 
     @GetMapping(value = "/detail/{id}")
     public String detail(Model model, @PathVariable("id") Integer id, AnswerDto answerDto) {
@@ -62,39 +60,43 @@ public class QuestionController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create")
-    public String questionCreate(@Valid QuestionDto QuestionDto, BindingResult bindingResult, Principal principal) {
+    public String questionCreate(@Valid QuestionDto questionDto,
+                                 BindingResult bindingResult,
+                                 Principal principal) {
         if (bindingResult.hasErrors()) {
             return "question_form";
         }
         Member member = this.memberService.getMember(principal.getName());
-        this.questionService.create(QuestionDto.getSubject(), QuestionDto.getContent(), member);
+        this.questionService.create(questionDto.getSubject(), questionDto.getContent(), member);
         return "redirect:/question/list";
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/modify/{id}")
-    public String questionModify(QuestionDto QuestionDto, @PathVariable("id") Integer id, Principal principal) {
+    public String questionModify(QuestionDto questionDto, @PathVariable("id") Integer id, Principal principal) {
         Question question = this.questionService.getQuestion(id);
         if (!question.getMember().getEmail().equals(principal.getName())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다.");
         }
-        QuestionDto.setSubject(question.getSubject());
-        QuestionDto.setContent(question.getContent());
+        questionDto.setSubject(question.getSubject());
+        questionDto.setContent(question.getContent());
         return "question_form";
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/modify/{id}")
-    public String questionModify(@Valid QuestionDto QuestionDto, BindingResult bindingResult, Principal principal,
+    public String questionModify(@Valid QuestionDto questionDto,
+                                 BindingResult bindingResult,
+                                 Principal principal,
                                  @PathVariable("id") Integer id) {
         if (bindingResult.hasErrors()) {
             return "question_form";
         }
         Question question = this.questionService.getQuestion(id);
-        if (!question.getMember().getEmail().equals(principal.getName())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
+        if (!question.getMember().getName().equals(principal.getName())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다.");
         }
-        this.questionService.modify(question, QuestionDto.getSubject(), QuestionDto.getContent());
+        this.questionService.modify(question, questionDto.getSubject(), questionDto.getContent());
         return String.format("redirect:/question/detail/%s", id);
     }
 
@@ -102,11 +104,21 @@ public class QuestionController {
     @GetMapping("/delete/{id}")
     public String questionDelete(Principal principal, @PathVariable("id") Integer id) {
         Question question = this.questionService.getQuestion(id);
-        if (!question.getMember().getEmail().equals(principal.getName())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제권한이 없습니다.");
+        if (!question.getMember().getName().equals(principal.getName())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제 권한이 없습니다.");
         }
         this.questionService.delete(question);
         return "redirect:/";
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/vote/{id}")
+    public String questionVote(Principal principal, @PathVariable("id") Integer id) {
+        Question question = this.questionService.getQuestion(id);
+        Member member = this.memberService.getMember(principal.getName());
+        this.questionService.vote(question, member);
+        return String.format("redirect:/question/detail/%s", id);
+    }
+
 }
+

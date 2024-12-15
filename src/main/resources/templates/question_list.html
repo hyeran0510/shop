@@ -1,4 +1,8 @@
-<html layout:decorate="~{layouts/layout1}">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+
 <div layout:fragment="content" class="container my-3">
     <div class="row my-3">
         <div class="col-6">
@@ -29,7 +33,7 @@
                       th:text="${#lists.size(question.answerList)}">
 					</span>
             </td>
-            <td><span th:if="${question.member != null}" th:text="${question.member.username}"></span></td>
+            <td><span th:if="${question.member != null}" th:text="${question.member.name}"></span></td>
             <td th:text="${#temporals.format(question.createDate, 'yyyy-MM-dd HH:mm')}"></td>
         </tr>
         </tbody>
@@ -60,7 +64,8 @@
         <input type="hidden" id="page" name="page" th:value="${paging.number}">
     </form>
 </div>
-<script layout:fragment="script" type='text/javascript'>
+
+<script type="text/javascript">
     const page_elements = document.getElementsByClassName("page-link");
     Array.from(page_elements).forEach(function (element) {
         element.addEventListener('click', function () {

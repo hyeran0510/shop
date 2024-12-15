@@ -42,4 +42,5 @@ public class Question {
 
     @ManyToMany
     Set<Member> voter;
+
 }
