@@ -1,5 +1,4 @@
 
-https://github.com/user-attachments/assets/c536737b-bd4a-4463-947f-45dc4e59cfbb
 🐾 쿠키월드 & Shopping Mall
 프로젝트 소개
 
