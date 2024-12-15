@@ -22,7 +22,12 @@
 질문 후 답변 , 추천, 수정, 삭제기능 
 **사용자 간 물건 추천, 문제 해결 및 정보 공유
 CRUD 기능 구현 (게시물 작성, 읽기, 수정, 삭제)
-https://github.com/user-attachments/assets/97f462b8-4fd1-47a7-9437-a8bebdbff6aa
+
+
+https://github.com/user-attachments/assets/ec9a4880-e4c8-4c0e-954b-869dca15adcd
+
+
+
 
 **버킷리스트
 사용자가 원하는 물건을 별점(우선순위)에 따라 정리
