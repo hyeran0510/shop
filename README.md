@@ -8,6 +8,10 @@
 주요 기능
 자유게시판
 
+
+https://github.com/user-attachments/assets/c3659017-ae80-4c09-859a-90c5224f4191
+
+
 사용자 간 물건 추천, 문제 해결 및 정보 공유
 CRUD 기능 구현 (게시물 작성, 읽기, 수정, 삭제)
 버킷리스트
